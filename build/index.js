@@ -12559,15 +12559,441 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const Dashboard = () => {
+  // State for form data
+  const [selectedColumns, setSelectedColumns] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [tableStyle, setTableStyle] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('default');
+  const [wholesaleProducts, setWholesaleProducts] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('all');
+  const [selectedCategory, setSelectedCategory] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('all');
+  const [productsPerPage, setProductsPerPage] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
+  const [categories, setCategories] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [isLoading, setIsLoading] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true);
+  const [message, setMessage] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
+
+  // Available columns options
+  const columnOptions = [{
+    value: 'image',
+    label: 'Image'
+  }, {
+    value: 'product_name',
+    label: 'Product Name'
+  }, {
+    value: 'sku',
+    label: 'SKU'
+  }, {
+    value: 'category',
+    label: 'Category'
+  }, {
+    value: 'price',
+    label: 'Price'
+  }, {
+    value: 'in_stock',
+    label: 'Stock Status'
+  }, {
+    value: 'quantity',
+    label: 'Quantity'
+  }, {
+    value: 'add_to_cart',
+    label: 'Add to Cart'
+  }];
+
+  // Load initial settings
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    loadSettings();
+    loadCategories();
+  }, []);
+  const loadSettings = async () => {
+    try {
+      // Replace with actual API call to WordPress
+      const response = await fetch('/wp-json/wpt/v1/settings');
+      const data = await response.json();
+
+      // Mock data for demonstration
+      const mockSettings = {
+        selected_columns: ['image', 'product_name', 'price'],
+        table_style: 'default',
+        wholesale_products: 'all',
+        category: 'all',
+        products_per_page: '10'
+      };
+      setSelectedColumns(data.selected_columns || []);
+      setTableStyle(data.table_style || 'default');
+      setWholesaleProducts(data.wholesale_products_opt || 'all');
+      setSelectedCategory(data.wholesale_product_category || 'all');
+      setProductsPerPage(data.wholesale_product_pp || '');
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error loading settings:', error);
+      setIsLoading(false);
+    }
+  };
+  const loadCategories = async () => {
+    try {
+      // Replace with actual API call to WordPress
+      const response = await fetch('/wp-json/wpt/v1/categories');
+      const data = await response.json();
+
+      // Check if data is an object and extract categories if they exist
+      if (data && data.length) {
+        // If data is already an array, set it as categories
+        setCategories(data);
+      } else if (data && Object.values(data).length) {
+        // Convert the response object into an array of category objects
+        const categoriesArray = Object.values(data);
+        setCategories(categoriesArray);
+      } else {
+        // Fallback to an empty array if no categories are found
+        setCategories([]);
+      }
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    }
+  };
+  const handleColumnChange = columnValue => {
+    setSelectedColumns(prev => {
+      if (prev.includes(columnValue)) {
+        return prev.filter(col => col !== columnValue);
+      } else {
+        return [...prev, columnValue];
+      }
+    });
+  };
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    try {
+      const settingsData = {
+        selected_columns: selectedColumns,
+        table_style: tableStyle,
+        wholesale_products_opt: wholesaleProducts,
+        wholesale_product_category: selectedCategory,
+        wholesale_product_pp: productsPerPage
+      };
+
+      // Replace with actual API call to WordPress
+      const response = await fetch('/wp-json/wpt/v1/settings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-WP-Nonce': wpApiSettings.nonce
+        },
+        body: JSON.stringify(settingsData)
+      });
+
+      // Mock success response
+      setTimeout(() => {
+        setMessage('Settings saved successfully!');
+        setIsLoading(false);
+        setTimeout(() => setMessage(''), 3000);
+      }, 1000);
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      setMessage('Error saving settings. Please try again.');
+      setIsLoading(false);
+      setTimeout(() => setMessage(''), 3000);
+    }
+  };
+  if (isLoading && !message) {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+      className: "admin-dashboard",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        className: "card-board",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+          children: "Loading..."
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
+          children: "Please wait while we load your settings."
+        })]
+      })
+    });
+  }
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
     className: "admin-dashboard",
     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
       className: "card-board",
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
-        children: "Dashboard Admin"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("p", {
-        children: ["Edit this admin Dashboard component at ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("code", {
-          children: "src/components/admin/Dashboard.jsx"
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h1", {
+        style: {
+          fontSize: '23px',
+          fontWeight: '400',
+          margin: '0 0 20px 0',
+          padding: '9px 15px 4px 0',
+          lineHeight: '29px'
+        },
+        children: "Wholesale Product Table Settings"
+      }), message && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+        style: {
+          backgroundColor: message.includes('Error') ? '#dc3232' : '#00a32a',
+          color: 'white',
+          padding: '12px',
+          borderRadius: '4px',
+          marginBottom: '20px',
+          border: '1px solid transparent'
+        },
+        children: message
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("table", {
+          style: {
+            width: '100%',
+            borderCollapse: 'separate',
+            borderSpacing: '0',
+            backgroundColor: '#fff',
+            border: '1px solid #c3c4c7',
+            boxShadow: '0 1px 1px rgba(0,0,0,.04)'
+          },
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tbody", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+              style: {
+                borderBottom: '1px solid #c3c4c7'
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+                scope: "row",
+                style: {
+                  width: '200px',
+                  padding: '20px 10px',
+                  textAlign: 'left',
+                  fontWeight: '600',
+                  verticalAlign: 'top',
+                  backgroundColor: '#f6f7f7'
+                },
+                children: "Select Columns to Display"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+                style: {
+                  padding: '20px 10px'
+                },
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+                  style: {
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '15px'
+                  },
+                  children: columnOptions.map(option => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("label", {
+                    style: {
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer'
+                    },
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+                      type: "checkbox",
+                      value: option.value,
+                      checked: selectedColumns.includes(option.value),
+                      onChange: () => handleColumnChange(option.value),
+                      style: {
+                        margin: '0'
+                      }
+                    }), option.label]
+                  }, option.value))
+                })
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+              style: {
+                borderBottom: '1px solid #c3c4c7'
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+                scope: "row",
+                style: {
+                  width: '200px',
+                  padding: '20px 10px',
+                  textAlign: 'left',
+                  fontWeight: '600',
+                  verticalAlign: 'top',
+                  backgroundColor: '#f6f7f7'
+                },
+                children: "Select Table Style"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+                style: {
+                  padding: '20px 10px'
+                },
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+                  style: {
+                    display: 'flex',
+                    gap: '20px'
+                  },
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("label", {
+                    style: {
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer'
+                    },
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+                      type: "radio",
+                      name: "table_style",
+                      value: "default",
+                      checked: tableStyle === 'default',
+                      onChange: e => setTableStyle(e.target.value),
+                      style: {
+                        margin: '0'
+                      }
+                    }), "Default Style"]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("label", {
+                    style: {
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer'
+                    },
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+                      type: "radio",
+                      name: "table_style",
+                      value: "plugin",
+                      checked: tableStyle === 'plugin',
+                      onChange: e => setTableStyle(e.target.value),
+                      style: {
+                        margin: '0'
+                      }
+                    }), "Plugin Style"]
+                  })]
+                })
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+              style: {
+                borderBottom: '1px solid #c3c4c7'
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+                scope: "row",
+                style: {
+                  width: '200px',
+                  padding: '20px 10px',
+                  textAlign: 'left',
+                  fontWeight: '600',
+                  verticalAlign: 'top',
+                  backgroundColor: '#f6f7f7'
+                },
+                children: "Select Wholesale Products"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+                style: {
+                  padding: '20px 10px'
+                },
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+                  style: {
+                    display: 'flex',
+                    gap: '20px'
+                  },
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("label", {
+                    style: {
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer'
+                    },
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+                      type: "radio",
+                      name: "wholesale_products",
+                      value: "all",
+                      checked: wholesaleProducts === 'all',
+                      onChange: e => setWholesaleProducts(e.target.value),
+                      style: {
+                        margin: '0'
+                      }
+                    }), "All Products"]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("label", {
+                    style: {
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer'
+                    },
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+                      type: "radio",
+                      name: "wholesale_products",
+                      value: "category",
+                      checked: wholesaleProducts === 'category',
+                      onChange: e => setWholesaleProducts(e.target.value),
+                      style: {
+                        margin: '0'
+                      }
+                    }), "Select a Category"]
+                  })]
+                })
+              })]
+            }), wholesaleProducts === 'category' && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+              style: {
+                borderBottom: '1px solid #c3c4c7'
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+                scope: "row",
+                style: {
+                  width: '200px',
+                  padding: '20px 10px',
+                  textAlign: 'left',
+                  fontWeight: '600',
+                  verticalAlign: 'top',
+                  backgroundColor: '#f6f7f7'
+                },
+                children: "Select a Category as Wholesale Product"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+                style: {
+                  padding: '20px 10px'
+                },
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
+                  value: selectedCategory,
+                  onChange: e => setSelectedCategory(e.target.value),
+                  style: {
+                    padding: '8px 12px',
+                    border: '1px solid #8c8f94',
+                    borderRadius: '4px',
+                    fontSize: '14px',
+                    minWidth: '200px'
+                  },
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
+                    value: "all",
+                    children: "All Categories"
+                  }), categories.map(category => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
+                    value: category.term_id,
+                    children: category.name
+                  }, category.term_id))]
+                })
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+                scope: "row",
+                style: {
+                  width: '200px',
+                  padding: '20px 10px',
+                  textAlign: 'left',
+                  fontWeight: '600',
+                  verticalAlign: 'top',
+                  backgroundColor: '#f6f7f7'
+                },
+                children: "Products Per Page"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+                style: {
+                  padding: '20px 10px'
+                },
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+                  type: "text",
+                  value: productsPerPage,
+                  onChange: e => setProductsPerPage(e.target.value),
+                  placeholder: "Enter number of products per page",
+                  style: {
+                    padding: '8px 12px',
+                    border: '1px solid #8c8f94',
+                    borderRadius: '4px',
+                    fontSize: '14px',
+                    width: '200px'
+                  }
+                })
+              })]
+            })]
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+          style: {
+            marginTop: '20px'
+          },
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+            type: "button",
+            onClick: handleSubmit,
+            disabled: isLoading,
+            style: {
+              backgroundColor: '#2271b1',
+              color: 'white',
+              border: '1px solid #2271b1',
+              borderRadius: '3px',
+              padding: '8px 12px',
+              fontSize: '13px',
+              cursor: isLoading ? 'not-allowed' : 'pointer',
+              opacity: isLoading ? 0.6 : 1
+            },
+            children: isLoading ? 'Saving...' : 'Save Changes'
+          })
         })]
       })]
     })
@@ -12999,17 +13425,17 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 
-const elementAdmin = document.getElementById('react-admin-root');
+const elementAdmin = document.getElementById('wptw-admin-settings');
 if (elementAdmin) {
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.render)(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_Admin__WEBPACK_IMPORTED_MODULE_1__["default"], {}), elementAdmin);
+}
+const reactTable = document.getElementById('wpt-product-table');
+if (reactTable) {
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.render)(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_components_frontend_Table__WEBPACK_IMPORTED_MODULE_3__["default"], {}), reactTable);
 }
 const elementFront = document.getElementById('react-frontend-root');
 if (elementFront) {
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.render)(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_Frontend__WEBPACK_IMPORTED_MODULE_2__["default"], {}), elementFront);
-}
-const reactTable = document.getElementById('react-table');
-if (reactTable) {
-  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.render)(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_components_frontend_Table__WEBPACK_IMPORTED_MODULE_3__["default"], {}), reactTable);
 }
 const CirtifigateTable = document.getElementById('student-cirtifigate');
 if (CirtifigateTable) {

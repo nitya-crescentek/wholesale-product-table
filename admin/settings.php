@@ -1,8 +1,6 @@
-<div id="react-base-admin-app">
+<div id="wptw-admin-settings-container" class="wptw-admin-settings-container">
 
-    <h2 className='admin-title'>Admin Setting Page</h2>
-    <hr />
-
-    <div id="react-admin-root"></div> 
+    <div id="wptw-admin-settings"></div> 
 
 </div>
+

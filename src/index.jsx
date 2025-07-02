@@ -10,11 +10,23 @@ import Certificate from './components/frontend/Certificate';
 import './style/main.scss';
 
 
-const elementAdmin = document.getElementById('react-admin-root');
+const elementAdmin = document.getElementById('wptw-admin-settings');
 
 if (elementAdmin) {
     render(<Admin />, elementAdmin);
 }
+
+
+const reactTable = document.getElementById('wpt-product-table');
+
+if (reactTable) {
+    render(<Table />, reactTable);
+}
+
+
+
+
+
 
 
 const elementFront = document.getElementById('react-frontend-root');
@@ -22,14 +34,6 @@ const elementFront = document.getElementById('react-frontend-root');
 if (elementFront) {
     render(<Frontend />, elementFront);
 }
-
-
-const reactTable = document.getElementById('react-table');
-
-if (reactTable) {
-    render(<Table />, reactTable);
-}
-
 
 
 const CirtifigateTable = document.getElementById('student-cirtifigate');

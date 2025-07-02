@@ -1,14 +1,11 @@
 <?php
 
-namespace ReactBase\Classes;
-
-
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
 
-class APIs {
+class WPTW_APIs {
 
     /**
      * Constructor
@@ -33,49 +30,94 @@ class APIs {
      * @return void
      */
     public function register_api_endpoints() {
-        
-        // die("TEST");
 
-        register_rest_route( 'react-base/v1', '/data', [
+        register_rest_route( 'wpt/v1', '/categories', [
             'methods'  => 'GET',
-            'callback' => [ $this, 'get_data' ],
+            'callback' => [ $this, 'wptw_get_categories' ],
             'permission_callback' => '__return_true',
         ] );
 
-
-        register_rest_route( 'react-base/v1', '/table-data', [
+        register_rest_route( 'wpt/v1', '/settings', [
             'methods'  => 'GET',
-            'callback' => [ $this, 'get_table_data' ],
+            'callback' => [$this, 'wptw_get_settings'],
             'permission_callback' => '__return_true',
         ] );
-        
-    }
 
-    /**
-     * Get Data Callback.
-     *
-     * @return WP_REST_Response
-     */
-    public function get_data() {
-        $data = [
-            'message' => __( 'Hello from React Base API!', 'react_base' ),
-        ];
-        return rest_ensure_response( $data );
-    }
-
-
-    public function get_table_data() {
-        $data = [
-            'columns' => ['Dessert (100g serving)', 'Calories', 'Fat (g)', 'Carbs (g)', 'Protein (g)'],
-            'rows'    => [
-                ['Frozen yoghurt', 159, 6, 24, 4],
-                ['Ice cream sandwich', 237, 9, 37, 4.3],
-                ['Eclair', 262, 16, 24, 6],
-                ['Cupcake', 305, 3.7, 67, 4.3],
-                ['Gingerbread', 356, 16, 49, 3.9],
+        register_rest_route( 'wpt/v1', '/settings', [
+            'methods'  => 'POST',
+            'callback' => [$this, 'wptw_save_settings'],
+            'permission_callback' => function ( WP_REST_Request $request ) {
+                return current_user_can( 'manage_options' );
+            },
+            'args' => [
+                'selected_columns' => [
+                    'required' => false,
+                    'type'     => 'array',
+                    'items'    => [
+                        'type' => 'string',
+                    ],
+                ],
+                'table_style' => [
+                    'required' => false,
+                    'type'     => 'string',
+                ],
+                'wholesale_products_opt' => [
+                    'required' => false,
+                    'type'     => 'string',
+                ],
+                'wholesale_product_category' => [
+                    'required' => false,
+                    'type'     => 'string',
+                ],
+                'wholesale_product_pp' => [
+                    'required' => false,
+                    'type'     => 'integer',
+                ],
             ],
-        ];
+        ] );
+        
+    }
 
-        return rest_ensure_response($data);
+    public function wptw_get_categories(){
+        $categories = get_terms(array(
+            'taxonomy'   => 'product_cat',
+            'hide_empty' => true,
+        ));
+ 
+        return rest_ensure_response( $categories );
+    }
+
+    public function wptw_get_settings() {
+        $settings = array(
+            'selected_columns' => get_option( 'wptw_selected_columns', [] ),
+            'table_style'      => get_option( 'wptw_table_style', '' ),
+            'wholesale_products_opt' => get_option( 'wptw_wholesale_products_opt', '' ),
+            'wholesale_product_category' => get_option( 'wptw_wholesale_product_category', '' ),
+            'wholesale_product_pp' => get_option( 'wptw_wholesale_product_pp', '' ),
+        );
+
+        return rest_ensure_response( $settings );
+    }
+
+    public function wptw_save_settings( WP_REST_Request $request ) {
+        $settings = $request->get_json_params();
+
+        if ( isset( $settings['selected_columns'] ) ) {
+            update_option( 'wptw_selected_columns', $settings['selected_columns'] );
+        }
+        if ( isset( $settings['table_style'] ) ) {
+            update_option( 'wptw_table_style', sanitize_text_field( $settings['table_style'] ) );
+        }
+        if ( isset( $settings['wholesale_products_opt'] ) ) {
+            update_option( 'wptw_wholesale_products_opt', sanitize_text_field( $settings['wholesale_products_opt'] ) );
+        }
+        if ( isset( $settings['wholesale_product_category'] ) ) {
+            update_option( 'wptw_wholesale_product_category', sanitize_text_field( $settings['wholesale_product_category'] ) );
+        }
+        if ( isset( $settings['wholesale_product_pp'] ) ) {
+            update_option( 'wptw_wholesale_product_pp', intval( $settings['wholesale_product_pp'] ) );
+        }
+
+        return rest_ensure_response( [ 'status' => 'success' ] );
     }
 }

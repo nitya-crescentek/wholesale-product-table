@@ -1,0 +1,19 @@
+/* Admin Styles */
+
+td.wpt-input-container {
+    display: flex;
+    gap: 10px;
+}
+
+.wpt.form-table td{
+    vertical-align: middle;
+    text-align: left;
+    padding: 20px 10px 20px 0;
+}
+
+div#wptw-admin-settings {
+    /* width: 98%; */
+    margin-right: 20px;
+}
+
+
