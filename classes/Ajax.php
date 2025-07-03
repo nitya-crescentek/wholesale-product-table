@@ -26,6 +26,7 @@ if (! class_exists('WPTW_Ajax')) {
 
             $search_query    = isset($_POST['query']) ? sanitize_text_field(wp_unslash($_POST['query'])) : '';
             $filter_category = isset($_POST['category']) ? sanitize_text_field(wp_unslash($_POST['category'])) : 'all';
+            $sort            = isset($_POST['sort']) ? sanitize_text_field(wp_unslash($_POST['sort'])) : 'default';
             $page            = isset($_POST['page']) ? absint(wp_unslash($_POST['page'])) : 1;
 
             $selected_columns = get_option('wptw_selected_columns', array('image', 'product_name', 'sku', 'category', 'price', 'in_stock', 'quantity', 'add_to_cart'));
@@ -48,6 +49,35 @@ if (! class_exists('WPTW_Ajax')) {
                     )
                 );
             }
+
+            // Sorting logic.
+            if($sort){
+                switch ($sort) {
+                    case 'price_asc':
+                        $args['meta_key'] = '_price';
+                        $args['orderby']  = 'meta_value_num';
+                        $args['order']    = 'ASC';
+                        break;
+                    case 'price_desc':
+                        $args['meta_key'] = '_price';
+                        $args['orderby']  = 'meta_value_num';
+                        $args['order']    = 'DESC';
+                        break;
+                    case 'name_asc':
+                        $args['orderby'] = 'title';
+                        $args['order']   = 'ASC';
+                        break;
+                    case 'name_desc':
+                        $args['orderby'] = 'title';
+                        $args['order']   = 'DESC';
+                        break;
+                    default:
+                        // Default sorting by date.
+                        $args['orderby'] = 'date';
+                        $args['order']   = 'DESC';
+                }
+            }
+            
 
             if (! empty($search_query)) {
                 $args['s'] = $search_query;

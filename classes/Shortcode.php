@@ -57,6 +57,16 @@ if (! class_exists('WPTW_Shortcode')) {
                         </select>
                     </div>
                     <?php endif; ?>
+                    <div class="wpt-sort">
+                        <label for="wpt-sort">Sort by:</label>
+                        <select name="wpt-sort-select" id="wpt-sort-select">
+                            <option value="default">Default</option>
+                            <option value="price_asc">Price - Low to High</option>
+                            <option value="price_desc">Price - High to Low</option>
+                            <option value="name_asc">Name - A to Z</option>
+                            <option value="name_desc">Name - Z to A</option>
+                        </select>
+                    </div>
                 </div>
                 <table class="wholesale-product-table">
                     <thead>
