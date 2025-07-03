@@ -48,7 +48,7 @@ class WholesaleProductTable
 
     public function addon_plugin_links($links, $file){
         if ($file === $this->plugin_basename) {
-            $links[] = __('<a href="https://buymeacoffee.com/nityasaha">Donate</a>', 'wholesale-product-table');
+            $links[] = __('<a href="https://buymeacoffee.com/nityasaha" style="font-weight:bold;color:#00d300;font-size:15px;">Donate</a>', 'wholesale-product-table');
             $links[] = __('Made with Love ❤️', 'wholesale-product-table');
         }
 
