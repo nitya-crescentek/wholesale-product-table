@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
 
 const Dashboard = () => {
     // State for form data
@@ -8,6 +9,11 @@ const Dashboard = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [productsPerPage, setProductsPerPage] = useState('');
     const [categories, setCategories] = useState([]);
+    const [EnableDiscount, setEnableDiscount] = useState('wholesale_discount_off');
+    const [wholesaleDiscountType, setWholesaleDiscountType] = useState('percentage');
+    const [wholesaleDiscountValue, setWholesaleDiscountValue] = useState('');
+    const [includeCategories, setIncludeCategories] = useState('');
+    const [excludeCategories, setExcludeCategories] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [message, setMessage] = useState('');
 
@@ -35,14 +41,41 @@ const Dashboard = () => {
             // Replace with actual API call to WordPress
             const response = await fetch('/wp-json/wpt/v1/settings');
             const data = await response.json();
-            
+
+            // Parse exclude categories if it's a string
+            let excludeCategories = [];
+            if (data.wpt_exclude_categories) {
+                if (typeof data.wpt_exclude_categories === 'string' && data.wpt_exclude_categories.trim()) {
+                    excludeCategories = data.wpt_exclude_categories.split(',')
+                        .map(id => id.trim())
+                        .filter(id => id); // Remove empty strings
+                } else if (Array.isArray(data.wpt_exclude_categories)) {
+                    excludeCategories = data.wpt_exclude_categories.map(id => id.toString());
+                }
+            }
+            let includeCategories = [];
+            if (data.wpt_include_categories) {
+                if (typeof data.wpt_include_categories === 'string' && data.wpt_include_categories.trim()) {
+                    includeCategories = data.wpt_include_categories.split(',')
+                        .map(id => id.trim())
+                        .filter(id => id); // Remove empty strings
+                } else if (Array.isArray(data.wpt_include_categories)) {
+                    includeCategories = data.wpt_include_categories.map(id => id.toString());
+                }
+            }
+
             // Mock data for demonstration
             const mockSettings = {
                 selected_columns: ['image', 'product_name', 'price'],
                 table_style: 'default',
                 wholesale_products: 'all',
                 category: 'all',
-                products_per_page: '10'
+                products_per_page: '10',
+                wholesale_discount: 'wholesale_discount_off',
+                wholesale_discount_type: 'percentage',
+                wholesale_discount_value: '',
+                include_categories: '',
+                exclude_categories: ''
             };
 
 
@@ -52,6 +85,25 @@ const Dashboard = () => {
             setSelectedCategory(data.wholesale_product_category || 'all');
             setProductsPerPage(data.wholesale_product_pp || '');
             setIsLoading(false);
+            setEnableDiscount(data.wpt_enabled_wholesale_discount || 'wholesale_discount_off');
+            setWholesaleDiscountType(data.wpt_wholesale_discount_type || 'percentage'); // Default value
+            setWholesaleDiscountValue(data.wpt_wholesale_discount_value || ''); // Default value
+            setIncludeCategories(includeCategories);
+            setExcludeCategories(excludeCategories);
+
+            // If the data is not in the expected format, use mock data
+            if (!data.selected_columns || !data.table_style || !data.wholesale_products_opt) {
+                setSelectedColumns(mockSettings.selected_columns);
+                setTableStyle(mockSettings.table_style);
+                setWholesaleProducts(mockSettings.wholesale_products);
+                setSelectedCategory(mockSettings.category);
+                setProductsPerPage(mockSettings.products_per_page);
+                setEnableDiscount(mockSettings.wholesale_discount);
+                setWholesaleDiscountType(mockSettings.wholesale_discount_type);
+                setWholesaleDiscountValue(mockSettings.wholesale_discount_value);
+                setIncludeCategories(mockSettings.include_categories);
+                setExcludeCategories(mockSettings.exclude_categories);
+            }
         } catch (error) {
             console.error('Error loading settings:', error);
             setIsLoading(false);
@@ -100,8 +152,17 @@ const Dashboard = () => {
                 table_style: tableStyle,
                 wholesale_products_opt: wholesaleProducts,
                 wholesale_product_category: selectedCategory,
-                wholesale_product_pp: productsPerPage
+                wholesale_product_pp: productsPerPage,
+                wpt_enabled_wholesale_discount: EnableDiscount,
+                wpt_wholesale_discount_type: wholesaleDiscountType,
+                wpt_wholesale_discount_value: wholesaleDiscountValue,
+                wpt_include_categories: includeCategories.join(','), // Join array to string for API
+                wpt_exclude_categories: excludeCategories.join(',') // Join array to string for API
             };
+
+            // console.log('Settings Data:', settingsData);
+            // return false;
+
 
             // Replace with actual API call to WordPress
             const response = await fetch('/wp-json/wpt/v1/settings', {
@@ -128,16 +189,16 @@ const Dashboard = () => {
         }
     };
 
-    if (isLoading && !message) {
-        return (
-            <div className="admin-dashboard">
-                <div className="card-board">
-                    <h3>Loading...</h3>
-                    <p>Please wait while we load your settings.</p>
-                </div>
-            </div>
-        );
-    }
+    // if (isLoading && !message) {
+    //     return (
+    //         <div className="admin-dashboard">
+    //             <div className="card-board">
+    //                 <h3>Loading...</h3>
+    //                 <p>Please wait while we load your settings.</p>
+    //             </div>
+    //         </div>
+    //     );
+    // }
 
     return (
         <div className="admin-dashboard">
@@ -293,24 +354,53 @@ const Dashboard = () => {
                                         Select a Category as Wholesale Product
                                     </th>
                                     <td style={{ padding: '20px 10px' }}>
-                                        <select
-                                            value={selectedCategory}
-                                            onChange={(e) => setSelectedCategory(e.target.value)}
-                                            style={{
-                                                padding: '8px 12px',
-                                                border: '1px solid #8c8f94',
-                                                borderRadius: '4px',
-                                                fontSize: '14px',
-                                                minWidth: '200px'
+                                        <Select
+                                            isMulti
+                                            name="selectedCategories"
+                                            options={[
+                                                { value: 'all', label: 'All Categories' },
+                                                ...categories.map(cat => ({ 
+                                                    value: cat.term_id.toString(), 
+                                                    label: cat.name 
+                                                }))
+                                            ]}
+                                            className="basic-multi-select"
+                                            classNamePrefix="select"
+                                            value={
+                                                selectedCategory === 'all' 
+                                                    ? [{ value: 'all', label: 'All Categories' }]
+                                                    : selectedCategory.split(',').map(catId => {
+                                                        const category = categories.find(cat => cat.term_id.toString() === catId.toString());
+                                                        return category ? { 
+                                                            value: category.term_id.toString(), 
+                                                            label: category.name 
+                                                        } : null;
+                                                    }).filter(option => option !== null)
+                                            }
+                                            onChange={(selected) => {
+                                                if (!selected || selected.length === 0) {
+                                                    setSelectedCategory('all');
+                                                } else if (selected.find(item => item.value === 'all')) {
+                                                    setSelectedCategory('all');
+                                                } else {
+                                                    const selectedIds = selected.map(option => option.value);
+                                                    setSelectedCategory(selectedIds.join(','));
+                                                }
                                             }}
-                                        >
-                                            <option value="all">All Categories</option>
-                                            {categories.map(category => (
-                                                <option key={category.term_id} value={category.term_id}>
-                                                    {category.name}
-                                                </option>
-                                            ))}
-                                        </select>
+                                            placeholder="Select categories"
+                                            isLoading={isLoading || categories.length === 0}
+                                            styles={{
+                                                control: (provided) => ({
+                                                    ...provided,
+                                                    padding: '2px 4px',
+                                                    border: '1px solid #8c8f94',
+                                                    borderRadius: '4px',
+                                                    fontSize: '14px',
+                                                    minWidth: '200px',
+                                                    minHeight: 'auto'
+                                                })
+                                            }}
+                                        />
                                     </td>
                                 </tr>
                             )}
@@ -343,6 +433,186 @@ const Dashboard = () => {
                                     />
                                 </td>
                             </tr>
+
+                            {/* Wholesale discount */}
+                            <tr>
+                                <th scope="row" style={{
+                                    width: '200px',
+                                    padding: '20px 10px',
+                                    textAlign: 'left',
+                                    fontWeight: '600',
+                                    verticalAlign: 'top',
+                                    backgroundColor: '#f6f7f7'
+                                }}>
+                                    Wholesale Discount ?
+                                </th>
+                                <td style={{ padding: '20px 10px' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                                        <input
+                                            type="checkbox"
+                                            value={EnableDiscount}
+                                            checked={EnableDiscount === 'wholesale_discount_on'}
+                                            onChange={() => setEnableDiscount(EnableDiscount === 'wholesale_discount_on' ? 'wholesale_discount_off' : 'wholesale_discount_on')}
+                                            style={{ margin: '0' }}
+                                        />
+                                        Enable Wholesale Discount
+                                    </label>
+                                </td>
+                            </tr>
+
+                            { EnableDiscount === 'wholesale_discount_on' && (
+                            <>
+                                <tr>
+                                    <th scope="row" style={{
+                                        width: '200px',
+                                        padding: '20px 10px',
+                                        textAlign: 'left',
+                                        fontWeight: '600',
+                                        verticalAlign: 'top',
+                                        backgroundColor: '#f6f7f7'
+                                    }}>
+                                        Wholesale Discount Type
+                                    </th>
+                                    <td style={{ padding: '20px 10px' }}>
+                                        <select
+                                            value={wholesaleDiscountType} 
+                                            onChange={(e) => setWholesaleDiscountType(e.target.value)}
+                                            style={{
+                                                padding: '8px 12px',
+                                                border: '1px solid #8c8f94',
+                                                borderRadius: '4px',
+                                                fontSize: '14px',
+                                                minWidth: '200px'
+                                            }}
+                                        >
+                                            <option value="percentage">Percentage</option> 
+                                            <option value="fixed">Fixed Amount</option>
+                                        </select>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th scope="row" style={{
+                                        width: '200px',
+                                        padding: '20px 10px',
+                                        textAlign: 'left',
+                                        fontWeight: '600',
+                                        verticalAlign: 'top',
+                                        backgroundColor: '#f6f7f7'
+                                    }}>
+                                        Wholesale Discount Value
+                                    </th>
+                                    <td style={{ padding: '20px 10px' }}>
+                                        <input
+                                            type="text"
+                                            value={wholesaleDiscountValue}
+                                            onChange={(e) => setWholesaleDiscountValue(e.target.value)}
+                                            placeholder="Enter discount value"
+                                            style={{
+                                                padding: '8px 12px',
+                                                border: '1px solid #8c8f94',
+                                                borderRadius: '4px',
+                                                fontSize: '14px',
+                                                width: '200px'
+                                            }}
+                                        />
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th scope="row" style={{
+                                        width: '200px',
+                                        padding: '20px 10px',
+                                        textAlign: 'left',
+                                        fontWeight: '600',
+                                        verticalAlign: 'top',
+                                        backgroundColor: '#f6f7f7'
+                                    }}>
+                                        Include Categories
+                                    </th>
+                                    <td style={{ padding: '20px 10px' }}>
+
+                                        <Select
+                                            isMulti
+                                            name="includeCategories"
+                                            options={categories.map(cat => ({ 
+                                                value: cat.term_id.toString(), 
+                                                label: cat.name 
+                                            }))}
+                                            className="basic-multi-select"
+                                            classNamePrefix="select"
+                                            value={
+                                                // Safety check: ensure includeCategories is array and categories is loaded
+                                                (Array.isArray(includeCategories) && categories.length > 0) 
+                                                    ? includeCategories
+                                                        .map(catId => {
+                                                            const category = categories.find(cat => cat.term_id.toString() === catId.toString());
+                                                            return category ? { 
+                                                                value: category.term_id.toString(), 
+                                                                label: category.name 
+                                                            } : null;
+                                                        })
+                                                        .filter(option => option !== null)
+                                                    : [] // Empty array if not ready
+                                            }
+                                            onChange={(selected) => {
+                                                const selectedIds = selected ? selected.map(option => option.value.toString()) : [];
+                                                setIncludeCategories(selectedIds);
+                                            }}
+                                            placeholder="Select categories to include"
+                                            isLoading={isLoading || categories.length === 0} // Show loading while data loads
+                                        />
+
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th scope="row" style={{
+                                        width: '200px',
+                                        padding: '20px 10px',
+                                        textAlign: 'left',
+                                        fontWeight: '600',
+                                        verticalAlign: 'top',
+                                        backgroundColor: '#f6f7f7'
+                                    }}>
+                                        Exclude Categories
+                                    </th>
+                                    <td style={{ padding: '20px 10px' }}>
+                                        <Select
+                                            isMulti
+                                            name="excludeCategories"
+                                            options={categories.map(cat => ({ 
+                                                value: cat.term_id.toString(), 
+                                                label: cat.name 
+                                            }))}
+                                            className="basic-multi-select"
+                                            classNamePrefix="select"
+                                            value={
+                                                // Safety check: ensure excludeCategories is array and categories is loaded
+                                                (Array.isArray(excludeCategories) && categories.length > 0) 
+                                                    ? excludeCategories
+                                                        .map(catId => {
+                                                            const category = categories.find(cat => cat.term_id.toString() === catId.toString());
+                                                            return category ? { 
+                                                                value: category.term_id.toString(), 
+                                                                label: category.name 
+                                                            } : null;
+                                                        })
+                                                        .filter(option => option !== null)
+                                                    : [] // Empty array if not ready
+                                            }
+                                            onChange={(selected) => {
+                                                const selectedIds = selected ? selected.map(option => option.value.toString()) : [];
+                                                setExcludeCategories(selectedIds);
+                                            }}
+                                            placeholder="Select categories to exclude"
+                                            isLoading={isLoading || categories.length === 0} // Show loading while data loads
+                                        />
+                                    </td>
+                                </tr>
+                            </>
+                            )}
+                        
                         </tbody>
                     </table>
 

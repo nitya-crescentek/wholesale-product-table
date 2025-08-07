@@ -33,6 +33,7 @@ if( ! class_exists('WPTW_Settings')){
         }
 
 
+        //No use of this function, but keeping it for future use.
         public function admin_settings_page_backup() {
             if ( isset( $_POST['wpt_settings_nonce'] ) && wp_verify_nonce( wp_unslash( $_POST['wpt_settings_nonce'] ), 'wpt_save_settings' ) ) {
 
