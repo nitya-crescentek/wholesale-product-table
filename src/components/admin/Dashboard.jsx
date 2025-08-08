@@ -29,7 +29,6 @@ const Dashboard = () => {
         { value: 'add_to_cart', label: 'Add to Cart' }
     ];
 
-
     // Load initial settings
     useEffect(() => {
         loadSettings();
@@ -77,7 +76,6 @@ const Dashboard = () => {
                 include_categories: '',
                 exclude_categories: ''
             };
-
 
             setSelectedColumns(data.selected_columns || []);
             setTableStyle(data.table_style || 'default');
@@ -160,10 +158,6 @@ const Dashboard = () => {
                 wpt_exclude_categories: excludeCategories.join(',') // Join array to string for API
             };
 
-            // console.log('Settings Data:', settingsData);
-            // return false;
-
-
             // Replace with actual API call to WordPress
             const response = await fetch('/wp-json/wpt/v1/settings', {
                 method: 'POST',
@@ -189,69 +183,50 @@ const Dashboard = () => {
         }
     };
 
-    // if (isLoading && !message) {
-    //     return (
-    //         <div className="admin-dashboard">
-    //             <div className="card-board">
-    //                 <h3>Loading...</h3>
-    //                 <p>Please wait while we load your settings.</p>
-    //             </div>
-    //         </div>
-    //     );
-    // }
+    // Custom styles for react-select
+    const selectStyles = {
+        control: (provided) => ({
+            ...provided,
+            padding: '2px 4px',
+            border: '1px solid #8c8f94',
+            borderRadius: '4px',
+            fontSize: '14px',
+            minWidth: '200px',
+            minHeight: 'auto'
+        })
+    };
 
     return (
         <div className="admin-dashboard">
             <div className="card-board">
-                <h1 style={{ fontSize: '23px', fontWeight: '400', margin: '0 0 20px 0', padding: '9px 15px 4px 0', lineHeight: '29px' }}>
+                <h1 className="dashboard-title">
                     Wholesale Product Table Settings
                 </h1>
 
                 {message && (
-                    <div style={{
-                        backgroundColor: message.includes('Error') ? '#dc3232' : '#00a32a',
-                        color: 'white',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        marginBottom: '20px',
-                        border: '1px solid transparent'
-                    }}>
+                    <div className={`message ${message.includes('Error') ? 'message--error' : 'message--success'}`}>
                         {message}
                     </div>
                 )}
 
-                <div>
-                    <table style={{ 
-                        width: '100%', 
-                        borderCollapse: 'separate', 
-                        borderSpacing: '0',
-                        backgroundColor: '#fff',
-                        border: '1px solid #c3c4c7',
-                        boxShadow: '0 1px 1px rgba(0,0,0,.04)'
-                    }}>
+                <div className="settings-container">
+                    <table className="settings-table">
                         <tbody>
                             {/* Column Selection */}
-                            <tr style={{ borderBottom: '1px solid #c3c4c7' }}>
-                                <th scope="row" style={{
-                                    width: '200px',
-                                    padding: '20px 10px',
-                                    textAlign: 'left',
-                                    fontWeight: '600',
-                                    verticalAlign: 'top',
-                                    backgroundColor: '#f6f7f7'
-                                }}>
+                            <tr className="settings-row">
+                                <th className="settings-header">
                                     Select Columns to Display
                                 </th>
-                                <td style={{ padding: '20px 10px' }}>
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
+                                <td className="settings-content">
+                                    <div className="checkbox-group">
                                         {columnOptions.map(option => (
-                                            <label key={option.value} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                                            <label key={option.value} className="checkbox-label">
                                                 <input
                                                     type="checkbox"
                                                     value={option.value}
                                                     checked={selectedColumns.includes(option.value)}
                                                     onChange={() => handleColumnChange(option.value)}
-                                                    style={{ margin: '0' }}
+                                                    className="checkbox-input"
                                                 />
                                                 {option.label}
                                             </label>
@@ -261,38 +236,31 @@ const Dashboard = () => {
                             </tr>
 
                             {/* Table Style */}
-                            <tr style={{ borderBottom: '1px solid #c3c4c7' }}>
-                                <th scope="row" style={{
-                                    width: '200px',
-                                    padding: '20px 10px',
-                                    textAlign: 'left',
-                                    fontWeight: '600',
-                                    verticalAlign: 'top',
-                                    backgroundColor: '#f6f7f7'
-                                }}>
+                            <tr className="settings-row">
+                                <th className="settings-header">
                                     Select Table Style
                                 </th>
-                                <td style={{ padding: '20px 10px' }}>
-                                    <div style={{ display: 'flex', gap: '20px' }}>
-                                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                                <td className="settings-content">
+                                    <div className="radio-group">
+                                        <label className="radio-label">
                                             <input
                                                 type="radio"
                                                 name="table_style"
                                                 value="default"
                                                 checked={tableStyle === 'default'}
                                                 onChange={(e) => setTableStyle(e.target.value)}
-                                                style={{ margin: '0' }}
+                                                className="radio-input"
                                             />
                                             Default Style
                                         </label>
-                                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                                        <label className="radio-label">
                                             <input
                                                 type="radio"
                                                 name="table_style"
                                                 value="plugin"
                                                 checked={tableStyle === 'plugin'}
                                                 onChange={(e) => setTableStyle(e.target.value)}
-                                                style={{ margin: '0' }}
+                                                className="radio-input"
                                             />
                                             Plugin Style
                                         </label>
@@ -301,38 +269,31 @@ const Dashboard = () => {
                             </tr>
 
                             {/* Wholesale Products */}
-                            <tr style={{ borderBottom: '1px solid #c3c4c7' }}>
-                                <th scope="row" style={{
-                                    width: '200px',
-                                    padding: '20px 10px',
-                                    textAlign: 'left',
-                                    fontWeight: '600',
-                                    verticalAlign: 'top',
-                                    backgroundColor: '#f6f7f7'
-                                }}>
+                            <tr className="settings-row">
+                                <th className="settings-header">
                                     Select Wholesale Products
                                 </th>
-                                <td style={{ padding: '20px 10px' }}>
-                                    <div style={{ display: 'flex', gap: '20px' }}>
-                                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                                <td className="settings-content">
+                                    <div className="radio-group">
+                                        <label className="radio-label">
                                             <input
                                                 type="radio"
                                                 name="wholesale_products"
                                                 value="all"
                                                 checked={wholesaleProducts === 'all'}
                                                 onChange={(e) => setWholesaleProducts(e.target.value)}
-                                                style={{ margin: '0' }}
+                                                className="radio-input"
                                             />
                                             All Products
                                         </label>
-                                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                                        <label className="radio-label">
                                             <input
                                                 type="radio"
                                                 name="wholesale_products"
                                                 value="category"
                                                 checked={wholesaleProducts === 'category'}
                                                 onChange={(e) => setWholesaleProducts(e.target.value)}
-                                                style={{ margin: '0' }}
+                                                className="radio-input"
                                             />
                                             Select a Category
                                         </label>
@@ -342,18 +303,11 @@ const Dashboard = () => {
 
                             {/* Category Selection */}
                             {wholesaleProducts === 'category' && (
-                                <tr style={{ borderBottom: '1px solid #c3c4c7' }}>
-                                    <th scope="row" style={{
-                                        width: '200px',
-                                        padding: '20px 10px',
-                                        textAlign: 'left',
-                                        fontWeight: '600',
-                                        verticalAlign: 'top',
-                                        backgroundColor: '#f6f7f7'
-                                    }}>
+                                <tr className="settings-row">
+                                    <th className="settings-header">
                                         Select a Category as Wholesale to Show on Wholesale Table
                                     </th>
-                                    <td style={{ padding: '20px 10px' }}>
+                                    <td className="settings-content">
                                         <Select
                                             isMulti
                                             name="selectedCategories"
@@ -361,8 +315,8 @@ const Dashboard = () => {
                                                 value: cat.term_id.toString(), 
                                                 label: cat.name 
                                             }))}
-                                            className="basic-multi-select"
-                                            classNamePrefix="select"
+                                            className="react-select-container"
+                                            classNamePrefix="react-select"
                                             value={
                                                 selectedCategory && selectedCategory !== 'all' && selectedCategory !== '' 
                                                     ? selectedCategory.split(',').map(catId => {
@@ -382,71 +336,44 @@ const Dashboard = () => {
                                             isLoading={isLoading || categories.length === 0}
                                             isClearable
                                             closeMenuOnSelect={false}
-                                            styles={{
-                                                control: (provided) => ({
-                                                    ...provided,
-                                                    padding: '2px 4px',
-                                                    border: '1px solid #8c8f94',
-                                                    borderRadius: '4px',
-                                                    fontSize: '14px',
-                                                    minWidth: '200px',
-                                                    minHeight: 'auto'
-                                                })
-                                            }}
+                                            styles={selectStyles}
                                         />
+                                        <span className="info-text">
+                                            Note: If no category is selected, all products will be shown.
+                                        </span>
                                     </td>
                                 </tr>
                             )}
 
                             {/* Products Per Page */}
-                            <tr>
-                                <th scope="row" style={{
-                                    width: '200px',
-                                    padding: '20px 10px',
-                                    textAlign: 'left',
-                                    fontWeight: '600',
-                                    verticalAlign: 'top',
-                                    backgroundColor: '#f6f7f7'
-                                }}>
+                            <tr className="settings-row">
+                                <th className="settings-header">
                                     Products Per Page
                                 </th>
-                                <td style={{ padding: '20px 10px' }}>
+                                <td className="settings-content">
                                     <input
                                         type="text"
                                         value={productsPerPage}
                                         onChange={(e) => setProductsPerPage(e.target.value)}
                                         placeholder="Enter number of products per page"
-                                        style={{
-                                            padding: '8px 12px',
-                                            border: '1px solid #8c8f94',
-                                            borderRadius: '4px',
-                                            fontSize: '14px',
-                                            width: '200px'
-                                        }}
+                                        className="text-input"
                                     />
                                 </td>
                             </tr>
 
                             {/* Wholesale discount */}
-                            <tr>
-                                <th scope="row" style={{
-                                    width: '200px',
-                                    padding: '20px 10px',
-                                    textAlign: 'left',
-                                    fontWeight: '600',
-                                    verticalAlign: 'top',
-                                    backgroundColor: '#f6f7f7'
-                                }}>
+                            <tr className="settings-row">
+                                <th className="settings-header">
                                     Wholesale Discount ?
                                 </th>
-                                <td style={{ padding: '20px 10px' }}>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                                <td className="settings-content">
+                                    <label className="checkbox-label">
                                         <input
                                             type="checkbox"
                                             value={EnableDiscount}
                                             checked={EnableDiscount === 'wholesale_discount_on'}
                                             onChange={() => setEnableDiscount(EnableDiscount === 'wholesale_discount_on' ? 'wholesale_discount_off' : 'wholesale_discount_on')}
-                                            style={{ margin: '0' }}
+                                            className="checkbox-input"
                                         />
                                         Enable Wholesale Discount
                                     </label>
@@ -455,28 +382,15 @@ const Dashboard = () => {
 
                             { EnableDiscount === 'wholesale_discount_on' && (
                             <>
-                                <tr>
-                                    <th scope="row" style={{
-                                        width: '200px',
-                                        padding: '20px 10px',
-                                        textAlign: 'left',
-                                        fontWeight: '600',
-                                        verticalAlign: 'top',
-                                        backgroundColor: '#f6f7f7'
-                                    }}>
+                                <tr className="settings-row">
+                                    <th className="settings-header">
                                         Wholesale Discount Type
                                     </th>
-                                    <td style={{ padding: '20px 10px' }}>
+                                    <td className="settings-content">
                                         <select
                                             value={wholesaleDiscountType} 
                                             onChange={(e) => setWholesaleDiscountType(e.target.value)}
-                                            style={{
-                                                padding: '8px 12px',
-                                                border: '1px solid #8c8f94',
-                                                borderRadius: '4px',
-                                                fontSize: '14px',
-                                                minWidth: '200px'
-                                            }}
+                                            className="select-input"
                                         >
                                             <option value="percentage">Percentage</option> 
                                             <option value="fixed">Fixed Amount</option>
@@ -484,47 +398,26 @@ const Dashboard = () => {
                                     </td>
                                 </tr>
 
-                                <tr>
-                                    <th scope="row" style={{
-                                        width: '200px',
-                                        padding: '20px 10px',
-                                        textAlign: 'left',
-                                        fontWeight: '600',
-                                        verticalAlign: 'top',
-                                        backgroundColor: '#f6f7f7'
-                                    }}>
+                                <tr className="settings-row">
+                                    <th className="settings-header">
                                         Wholesale Discount Value
                                     </th>
-                                    <td style={{ padding: '20px 10px' }}>
+                                    <td className="settings-content">
                                         <input
                                             type="text"
                                             value={wholesaleDiscountValue}
                                             onChange={(e) => setWholesaleDiscountValue(e.target.value)}
                                             placeholder="Enter discount value"
-                                            style={{
-                                                padding: '8px 12px',
-                                                border: '1px solid #8c8f94',
-                                                borderRadius: '4px',
-                                                fontSize: '14px',
-                                                width: '200px'
-                                            }}
+                                            className="text-input"
                                         />
                                     </td>
                                 </tr>
 
-                                <tr>
-                                    <th scope="row" style={{
-                                        width: '200px',
-                                        padding: '20px 10px',
-                                        textAlign: 'left',
-                                        fontWeight: '600',
-                                        verticalAlign: 'top',
-                                        backgroundColor: '#f6f7f7'
-                                    }}>
+                                <tr className="settings-row">
+                                    <th className="settings-header">
                                         Include Categories for Discount
                                     </th>
-                                    <td style={{ padding: '20px 10px' }}>
-
+                                    <td className="settings-content">
                                         <Select
                                             isMulti
                                             name="includeCategories"
@@ -532,8 +425,8 @@ const Dashboard = () => {
                                                 value: cat.term_id.toString(), 
                                                 label: cat.name 
                                             }))}
-                                            className="basic-multi-select"
-                                            classNamePrefix="select"
+                                            className="react-select-container"
+                                            classNamePrefix="react-select"
                                             value={
                                                 // Safety check: ensure includeCategories is array and categories is loaded
                                                 (Array.isArray(includeCategories) && categories.length > 0) 
@@ -555,22 +448,17 @@ const Dashboard = () => {
                                             placeholder="Select categories to include"
                                             isLoading={isLoading || categories.length === 0} // Show loading while data loads
                                         />
-
+                                        <span className="info-text">
+                                            Note: If no categories are selected, all products will be eligible for the discount.
+                                        </span>
                                     </td>
                                 </tr>
 
-                                <tr>
-                                    <th scope="row" style={{
-                                        width: '200px',
-                                        padding: '20px 10px',
-                                        textAlign: 'left',
-                                        fontWeight: '600',
-                                        verticalAlign: 'top',
-                                        backgroundColor: '#f6f7f7'
-                                    }}>
-                                        Exclude Categories for Discount
+                                <tr className="settings-row">
+                                    <th className="settings-header">
+                                        Exclude Categories from Discount
                                     </th>
-                                    <td style={{ padding: '20px 10px' }}>
+                                    <td className="settings-content">
                                         <Select
                                             isMulti
                                             name="excludeCategories"
@@ -578,8 +466,8 @@ const Dashboard = () => {
                                                 value: cat.term_id.toString(), 
                                                 label: cat.name 
                                             }))}
-                                            className="basic-multi-select"
-                                            classNamePrefix="select"
+                                            className="react-select-container"
+                                            classNamePrefix="react-select"
                                             value={
                                                 // Safety check: ensure excludeCategories is array and categories is loaded
                                                 (Array.isArray(excludeCategories) && categories.length > 0) 
@@ -609,21 +497,12 @@ const Dashboard = () => {
                         </tbody>
                     </table>
 
-                    <div style={{ marginTop: '20px' }}>
+                    <div className="button-container">
                         <button
                             type="button"
                             onClick={handleSubmit}
                             disabled={isLoading}
-                            style={{
-                                backgroundColor: '#2271b1',
-                                color: 'white',
-                                border: '1px solid #2271b1',
-                                borderRadius: '3px',
-                                padding: '8px 12px',
-                                fontSize: '13px',
-                                cursor: isLoading ? 'not-allowed' : 'pointer',
-                                opacity: isLoading ? 0.6 : 1
-                            }}
+                            className={`save-button ${isLoading ? 'save-button--loading' : ''}`}
                         >
                             {isLoading ? 'Saving...' : 'Save Changes'}
                         </button>
