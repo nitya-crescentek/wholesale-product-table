@@ -34,6 +34,14 @@ if (! class_exists('WPTW_Shortcode')) {
             
             $selected_columns = get_option('wptw_selected_columns');
             $selected_category_opt = get_option('wptw_wholesale_products_opt') ?? '';
+            $selected_categories = get_option('wptw_wholesale_product_category') ?? '';
+
+            $exp_cats = explode(',', $selected_categories);
+            $cat_count = array_filter($exp_cats, 'trim');
+            $cat_count = count($cat_count);
+
+            // print_r($exp_cats);
+            // die;
 
             ob_start();
             ?>
@@ -43,14 +51,22 @@ if (! class_exists('WPTW_Shortcode')) {
                     <div class="search">
                         <input type="text" id="wpt-search" placeholder="Search products..." />
                     </div>
-                    <?php if( $selected_category_opt === 'all' ) : ?>
+                    <?php if( $selected_category_opt === 'all' || $cat_count >= 2 ) : ?>
                     <div class="filter">
                         <select id="wpt-category-filter">
                             <option value="all">All Categories</option>
                             <?php
                             if (! is_wp_error($categories) && ! empty($categories)) {
                                 foreach ($categories as $cat) {
-                                    echo '<option value="' . esc_attr($cat->term_id) . '">' . esc_html($cat->name) . '</option>';
+                                    if ($selected_category_opt === 'all' || $cat_count < 2) {
+                                        // Show all categories
+                                        echo '<option value="' . esc_attr($cat->term_id) . '">' . esc_html($cat->name) . '</option>';
+                                    } else {
+                                        // Show only selected categories
+                                        if (in_array($cat->term_id, $exp_cats)) {
+                                            echo '<option value="' . esc_attr($cat->term_id) . '">' . esc_html($cat->name) . '</option>';
+                                        }
+                                    }
                                 }
                             }
                             ?>
@@ -76,15 +92,15 @@ if (! class_exists('WPTW_Shortcode')) {
                             <?php endif; ?>
                             <?php if (in_array('product_name', $selected_columns)) : ?>
                                 <th class="wpt-table-head">Product Name</th>
-                            <?php endif; ?>
-                            <?php if (in_array('sku', $selected_columns)) : ?>
-                                <th class="wpt-table-head">SKU</th>
+                            <?php endif; ?>                          
+                            <?php if (in_array('price', $selected_columns)) : ?>
+                                <th class="wpt-table-head">Price</th>
                             <?php endif; ?>
                             <?php if (in_array('category', $selected_columns)) : ?>
                                 <th class="wpt-table-head">Category</th>
                             <?php endif; ?>
-                            <?php if (in_array('price', $selected_columns)) : ?>
-                                <th class="wpt-table-head">Price</th>
+                            <?php if (in_array('sku', $selected_columns)) : ?>
+                                <th class="wpt-table-head">SKU</th>
                             <?php endif; ?>
                             <?php if (in_array('in_stock', $selected_columns)) : ?>
                                 <th class="wpt-table-head">Stock Status</th>

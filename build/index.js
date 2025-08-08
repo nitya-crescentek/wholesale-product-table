@@ -19907,20 +19907,20 @@ const Dashboard = () => {
     value: 'product_name',
     label: 'Product Name'
   }, {
-    value: 'sku',
-    label: 'SKU'
+    value: 'price',
+    label: 'Price'
   }, {
     value: 'category',
     label: 'Category'
-  }, {
-    value: 'price',
-    label: 'Price'
   }, {
     value: 'in_stock',
     label: 'Stock Status'
   }, {
     value: 'quantity',
     label: 'Quantity'
+  }, {
+    value: 'sku',
+    label: 'SKU'
   }, {
     value: 'add_to_cart',
     label: 'Add to Cart'
@@ -20298,7 +20298,7 @@ const Dashboard = () => {
                   verticalAlign: 'top',
                   backgroundColor: '#f6f7f7'
                 },
-                children: "Select a Category as Wholesale Product"
+                children: "Select a Category as Wholesale to Show on Wholesale Table"
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
                 style: {
                   padding: '20px 10px'
@@ -20306,37 +20306,28 @@ const Dashboard = () => {
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_select__WEBPACK_IMPORTED_MODULE_2__["default"], {
                   isMulti: true,
                   name: "selectedCategories",
-                  options: [{
-                    value: 'all',
-                    label: 'All Categories'
-                  }, ...categories.map(cat => ({
+                  options: categories.map(cat => ({
                     value: cat.term_id.toString(),
                     label: cat.name
-                  }))],
+                  })),
                   className: "basic-multi-select",
                   classNamePrefix: "select",
-                  value: selectedCategory === 'all' ? [{
-                    value: 'all',
-                    label: 'All Categories'
-                  }] : selectedCategory.split(',').map(catId => {
+                  value: selectedCategory && selectedCategory !== 'all' && selectedCategory !== '' ? selectedCategory.split(',').map(catId => {
                     const category = categories.find(cat => cat.term_id.toString() === catId.toString());
                     return category ? {
                       value: category.term_id.toString(),
                       label: category.name
                     } : null;
-                  }).filter(option => option !== null),
+                  }).filter(option => option !== null) : [] // Empty array when nothing selected or when 'all' was previously selected
+                  ,
                   onChange: selected => {
-                    if (!selected || selected.length === 0) {
-                      setSelectedCategory('all');
-                    } else if (selected.find(item => item.value === 'all')) {
-                      setSelectedCategory('all');
-                    } else {
-                      const selectedIds = selected.map(option => option.value);
-                      setSelectedCategory(selectedIds.join(','));
-                    }
+                    const selectedIds = selected ? selected.map(option => option.value) : [];
+                    setSelectedCategory(selectedIds.length > 0 ? selectedIds.join(',') : '');
                   },
                   placeholder: "Select categories",
                   isLoading: isLoading || categories.length === 0,
+                  isClearable: true,
+                  closeMenuOnSelect: false,
                   styles: {
                     control: provided => ({
                       ...provided,
@@ -20491,7 +20482,7 @@ const Dashboard = () => {
                     verticalAlign: 'top',
                     backgroundColor: '#f6f7f7'
                   },
-                  children: "Include Categories"
+                  children: "Include Categories for Discount"
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
                   style: {
                     padding: '20px 10px'
@@ -20534,7 +20525,7 @@ const Dashboard = () => {
                     verticalAlign: 'top',
                     backgroundColor: '#f6f7f7'
                   },
-                  children: "Exclude Categories"
+                  children: "Exclude Categories for Discount"
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
                   style: {
                     padding: '20px 10px'

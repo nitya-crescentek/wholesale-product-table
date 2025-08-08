@@ -25,7 +25,7 @@ if (! class_exists('WPTW_Ajax')) {
             check_ajax_referer('wpt_ajax_nonce', 'nonce');
 
             $search_query    = isset($_POST['query']) ? sanitize_text_field(wp_unslash($_POST['query'])) : '';
-            $filter_category = isset($_POST['category']) ? sanitize_text_field(wp_unslash($_POST['category'])) : 'all';
+            // $filter_category = isset($_POST['category']) ? sanitize_text_field(wp_unslash($_POST['category'])) : 'all';
             $sort            = isset($_POST['sort']) ? sanitize_text_field(wp_unslash($_POST['sort'])) : 'default';
             $page            = isset($_POST['page']) ? absint(wp_unslash($_POST['page'])) : 1;
 
@@ -33,6 +33,7 @@ if (! class_exists('WPTW_Ajax')) {
             $selected_ppp = get_option('wptw_wholesale_product_pp', 10);
             $selected_products_opt = get_option('wptw_wholesale_products_opt') ?? '';   
             $selected_p_category = get_option('wptw_wholesale_product_category') ?? '';
+            $arr_selected_p_category = explode(',', $selected_p_category);
 
             $args = array(
                 'post_type'      => 'product',
@@ -40,12 +41,13 @@ if (! class_exists('WPTW_Ajax')) {
                 'paged'          => $page,
             );
 
-            if ('all' !== $selected_products_opt) {
+
+            if ($selected_products_opt !== 'all' && !empty($selected_p_category) && !empty($arr_selected_p_category)) {
                 $args['tax_query'] = array(
                     array(
                         'taxonomy' => 'product_cat',
                         'field'    => 'term_id',
-                        'terms'    => $selected_p_category,
+                        'terms'    => array_filter(array_map('intval', $arr_selected_p_category)),
                     )
                 );
             }
@@ -81,16 +83,6 @@ if (! class_exists('WPTW_Ajax')) {
 
             if (! empty($search_query)) {
                 $args['s'] = $search_query;
-            }
-
-            if ('all' !== $filter_category) {
-                $args['tax_query'] = array(
-                    array(
-                        'taxonomy' => 'product_cat',
-                        'field'    => 'term_id',
-                        'terms'    => $filter_category,
-                    )
-                );
             }
 
             $products = new WP_Query($args);
@@ -135,6 +127,8 @@ if (! class_exists('WPTW_Ajax')) {
         public function get_product_table_rows($products, $selected_columns){
 
             ob_start();
+            $product_count = $products->found_posts;
+
             if ($products->have_posts()) :
                 while ($products->have_posts()) :
                     $products->the_post();
@@ -184,9 +178,11 @@ if (! class_exists('WPTW_Ajax')) {
                                 <?php endif; ?>
                             </td>
                         <?php endif; ?>
-
-                        <?php if (in_array('sku', $selected_columns)) : ?>
-                            <td class="wpt-sku-cell"><?php echo wp_kses_post($product->get_sku()); ?></td>
+                        
+                        <?php if (in_array('price', $selected_columns)) : ?>
+                            <td class="wpt-price-cell">
+                                <?php echo wp_kses_post($product->get_price_html()); ?>
+                            </td>
                         <?php endif; ?>
 
                         <?php if (in_array('category', $selected_columns)) : ?>
@@ -201,10 +197,8 @@ if (! class_exists('WPTW_Ajax')) {
                             </td>
                         <?php endif; ?>
 
-                        <?php if (in_array('price', $selected_columns)) : ?>
-                            <td class="wpt-price-cell">
-                                <?php echo wp_kses_post($product->get_price_html()); ?>
-                            </td>
+                        <?php if (in_array('sku', $selected_columns)) : ?>
+                            <td class="wpt-sku-cell"><?php echo wp_kses_post($product->get_sku()); ?></td>
                         <?php endif; ?>
 
                         <?php if (in_array('in_stock', $selected_columns)) : ?>
@@ -244,7 +238,11 @@ if (! class_exists('WPTW_Ajax')) {
                 </tr>
                 <?php
             endif;
-
+            ?>
+            <tr class="wpt-product-count">
+                <td colspan="10" class="wpt-product-count-cell">Total <?php echo esc_html($product_count); ?> products found</td>
+            </tr>
+            <?php
             return ob_get_clean();
         }
 
