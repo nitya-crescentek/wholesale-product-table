@@ -25,7 +25,7 @@ if (! class_exists('WPTW_Ajax')) {
             check_ajax_referer('wpt_ajax_nonce', 'nonce');
 
             $search_query    = isset($_POST['query']) ? sanitize_text_field(wp_unslash($_POST['query'])) : '';
-            // $filter_category = isset($_POST['category']) ? sanitize_text_field(wp_unslash($_POST['category'])) : 'all';
+            $filter_category = isset($_POST['category']) ? sanitize_text_field(wp_unslash($_POST['category'])) : 'all';
             $sort            = isset($_POST['sort']) ? sanitize_text_field(wp_unslash($_POST['sort'])) : 'default';
             $page            = isset($_POST['page']) ? absint(wp_unslash($_POST['page'])) : 1;
 
@@ -79,7 +79,17 @@ if (! class_exists('WPTW_Ajax')) {
                         $args['order']   = 'DESC';
                 }
             }
-            
+
+            // Category filtering on table
+            if ($filter_category !== 'all') {
+                $args['tax_query'] = array(
+                    array(
+                        'taxonomy' => 'product_cat',
+                        'field'    => 'term_id',
+                        'terms'    => $filter_category,
+                    )
+                );
+            }
 
             if (! empty($search_query)) {
                 $args['s'] = $search_query;

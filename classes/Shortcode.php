@@ -51,19 +51,19 @@ if (! class_exists('WPTW_Shortcode')) {
                     <div class="search">
                         <input type="text" id="wpt-search" placeholder="Search products..." />
                     </div>
-                    <?php if( $selected_category_opt === 'all' || $cat_count >= 2 ) : ?>
+                    <?php if( $selected_category_opt === 'all' || $cat_count >= 2) : ?>
                     <div class="filter">
                         <select id="wpt-category-filter">
                             <option value="all">All Categories</option>
                             <?php
                             if (! is_wp_error($categories) && ! empty($categories)) {
                                 foreach ($categories as $cat) {
-                                    if ($selected_category_opt === 'all' || $cat_count < 2) {
+                                    if ( $selected_category_opt === 'all') {
                                         // Show all categories
                                         echo '<option value="' . esc_attr($cat->term_id) . '">' . esc_html($cat->name) . '</option>';
                                     } else {
                                         // Show only selected categories
-                                        if (in_array($cat->term_id, $exp_cats)) {
+                                        if (in_array($cat->term_id, $exp_cats) ) {
                                             echo '<option value="' . esc_attr($cat->term_id) . '">' . esc_html($cat->name) . '</option>';
                                         }
                                     }
