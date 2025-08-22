@@ -19877,27 +19877,469 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _TabWholesaleTable__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TabWholesaleTable */ "./src/components/admin/TabWholesaleTable.jsx");
+/* harmony import */ var _TabDiscountRules__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./TabDiscountRules */ "./src/components/admin/TabDiscountRules.jsx");
+/* harmony import */ var _TabOtherSettings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./TabOtherSettings */ "./src/components/admin/TabOtherSettings.jsx");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__);
+
+
+
+
+
+
+// Main Dashboard Component
+
+const Dashboard = () => {
+  const [activeTab, setActiveTab] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('wholesale-table');
+  const [categories, setCategories] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [isLoading, setIsLoading] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true);
+  const tabs = [{
+    id: 'wholesale-table',
+    label: 'Wholesale Table'
+  }, {
+    id: 'discount-rules',
+    label: 'Discount Rules'
+  }, {
+    id: 'other',
+    label: 'Other'
+  }];
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    loadCategories();
+  }, []);
+  const loadCategories = async () => {
+    try {
+      const response = await fetch('/wp-json/wpt/v1/categories');
+      const data = await response.json();
+      if (data && data.length) {
+        setCategories(data);
+      } else if (data && Object.values(data).length) {
+        const categoriesArray = Object.values(data);
+        setCategories(categoriesArray);
+      } else {
+        setCategories([]);
+      }
+    } catch (error) {
+      console.error('Error loading categories:', error);
+      // Mock categories for demonstration
+      setCategories([{
+        term_id: 1,
+        name: 'Electronics'
+      }, {
+        term_id: 2,
+        name: 'Clothing'
+      }, {
+        term_id: 3,
+        name: 'Books'
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'wholesale-table':
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_TabWholesaleTable__WEBPACK_IMPORTED_MODULE_1__["default"], {
+          categories: categories,
+          isLoading: isLoading
+        });
+      case 'discount-rules':
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_TabDiscountRules__WEBPACK_IMPORTED_MODULE_2__["default"], {
+          categories: categories,
+          isLoading: isLoading
+        });
+      case 'other':
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_TabOtherSettings__WEBPACK_IMPORTED_MODULE_3__["default"], {});
+      default:
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_TabWholesaleTable__WEBPACK_IMPORTED_MODULE_1__["default"], {
+          categories: categories,
+          isLoading: isLoading
+        });
+    }
+  };
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+    className: "admin-dashboard",
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
+      className: "card-board",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("h1", {
+        className: "dashboard-title",
+        children: "Wholesale Product Table Settings"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+        className: "tabs-navigation",
+        children: tabs.map(tab => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+          onClick: () => setActiveTab(tab.id),
+          className: `tab-button ${activeTab === tab.id ? 'tab-button--active' : ''}`,
+          style: {
+            backgroundColor: activeTab === tab.id ? '#0073aa' : 'transparent',
+            color: activeTab === tab.id ? '#fff' : '#0073aa',
+            borderBottom: activeTab === tab.id ? '1px solid #0073aa' : '1px solid transparent'
+          },
+          onMouseOver: e => {
+            if (activeTab !== tab.id) {
+              e.target.style.backgroundColor = '#f0f8ff';
+            }
+          },
+          onMouseOut: e => {
+            if (activeTab !== tab.id) {
+              e.target.style.backgroundColor = 'transparent';
+            }
+          },
+          children: tab.label
+        }, tab.id))
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
+        className: "settings-container",
+        children: renderTabContent()
+      })]
+    })
+  });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Dashboard);
+
+/***/ }),
+
+/***/ "./src/components/admin/TabDiscountRules.jsx":
+/*!***************************************************!*\
+  !*** ./src/components/admin/TabDiscountRules.jsx ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_select__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-select */ "./node_modules/react-select/dist/react-select.esm.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__);
 
 
 
-const Dashboard = () => {
-  // State for form data
+// Discount Rules Component
+
+const DiscountRules = ({
+  categories,
+  isLoading
+}) => {
+  const [EnableDiscount, setEnableDiscount] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('wholesale_discount_off');
+  const [wholesaleDiscountType, setWholesaleDiscountType] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('percentage');
+  const [wholesaleDiscountValue, setWholesaleDiscountValue] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
+  const [includeCategories, setIncludeCategories] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [excludeCategories, setExcludeCategories] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [message, setMessage] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
+  const [saving, setSaving] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+
+  // Load settings on component mount
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    loadDiscountSettings();
+  }, []);
+  const loadDiscountSettings = async () => {
+    try {
+      const response = await fetch('/wp-json/wpt/v1/settings/discount-rules');
+      const data = await response.json();
+
+      // Parse categories
+      let excludeCategories = [];
+      if (data.wpt_exclude_categories) {
+        if (typeof data.wpt_exclude_categories === 'string' && data.wpt_exclude_categories.trim()) {
+          excludeCategories = data.wpt_exclude_categories.split(',').map(id => id.trim()).filter(id => id);
+        } else if (Array.isArray(data.wpt_exclude_categories)) {
+          excludeCategories = data.wpt_exclude_categories.map(id => id.toString());
+        }
+      }
+      let includeCategories = [];
+      if (data.wpt_include_categories) {
+        if (typeof data.wpt_include_categories === 'string' && data.wpt_include_categories.trim()) {
+          includeCategories = data.wpt_include_categories.split(',').map(id => id.trim()).filter(id => id);
+        } else if (Array.isArray(data.wpt_include_categories)) {
+          includeCategories = data.wpt_include_categories.map(id => id.toString());
+        }
+      }
+      setEnableDiscount(data.wpt_enabled_wholesale_discount || 'wholesale_discount_off');
+      setWholesaleDiscountType(data.wpt_wholesale_discount_type || 'percentage');
+      setWholesaleDiscountValue(data.wpt_wholesale_discount_value || '');
+      setIncludeCategories(includeCategories);
+      setExcludeCategories(excludeCategories);
+    } catch (error) {
+      console.error('Error loading discount settings:', error);
+    }
+  };
+  const handleSubmit = async () => {
+    setSaving(true);
+    try {
+      const settingsData = {
+        wpt_enabled_wholesale_discount: EnableDiscount,
+        wpt_wholesale_discount_type: wholesaleDiscountType,
+        wpt_wholesale_discount_value: wholesaleDiscountValue,
+        wpt_include_categories: includeCategories.join(','),
+        wpt_exclude_categories: excludeCategories.join(',')
+      };
+      const response = await fetch('/wp-json/wpt/v1/settings/discount-rules', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-WP-Nonce': wpApiSettings?.nonce || 'demo-nonce'
+        },
+        body: JSON.stringify(settingsData)
+      });
+
+      // Mock success response
+      setTimeout(() => {
+        setMessage('Discount rules saved successfully!');
+        setSaving(false);
+        setTimeout(() => setMessage(''), 3000);
+      }, 1000);
+    } catch (error) {
+      console.error('Error saving discount settings:', error);
+      setMessage('Error saving discount settings. Please try again.');
+      setSaving(false);
+      setTimeout(() => setMessage(''), 3000);
+    }
+  };
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+    className: "tab-content",
+    children: [message && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+      className: `message ${message.includes('Error') ? 'message--error' : 'message--success'}`,
+      children: message
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("table", {
+      className: "settings-table",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tbody", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+          className: "settings-row",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            className: "settings-header",
+            children: "Wholesale Discount ?"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+            className: "settings-content",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("label", {
+              className: "checkbox-label",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+                type: "checkbox",
+                value: EnableDiscount,
+                checked: EnableDiscount === 'wholesale_discount_on',
+                onChange: () => setEnableDiscount(EnableDiscount === 'wholesale_discount_on' ? 'wholesale_discount_off' : 'wholesale_discount_on'),
+                className: "checkbox-input"
+              }), "Enable Wholesale Discount"]
+            })
+          })]
+        }), EnableDiscount === 'wholesale_discount_on' && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.Fragment, {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+            className: "settings-row",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+              className: "settings-header",
+              children: "Wholesale Discount Type"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              className: "settings-content",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
+                value: wholesaleDiscountType,
+                onChange: e => setWholesaleDiscountType(e.target.value),
+                className: "select-input",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
+                  value: "percentage",
+                  children: "Percentage"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
+                  value: "fixed",
+                  children: "Fixed Amount"
+                })]
+              })
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+            className: "settings-row",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+              className: "settings-header",
+              children: "Wholesale Discount Value"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              className: "settings-content",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+                type: "text",
+                value: wholesaleDiscountValue,
+                onChange: e => setWholesaleDiscountValue(e.target.value),
+                placeholder: "Enter discount value",
+                className: "text-input"
+              })
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+            className: "settings-row",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+              className: "settings-header",
+              children: "Include Categories for Discount"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
+              className: "settings-content",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_select__WEBPACK_IMPORTED_MODULE_2__["default"], {
+                isMulti: true,
+                name: "includeCategories",
+                options: categories.map(cat => ({
+                  value: cat.term_id.toString(),
+                  label: cat.name
+                })),
+                className: "react-select-container",
+                classNamePrefix: "react-select",
+                value: Array.isArray(includeCategories) && categories.length > 0 ? includeCategories.map(catId => {
+                  const category = categories.find(cat => cat.term_id.toString() === catId.toString());
+                  return category ? {
+                    value: category.term_id.toString(),
+                    label: category.name
+                  } : null;
+                }).filter(option => option !== null) : [],
+                onChange: selected => {
+                  const selectedIds = selected ? selected.map(option => option.value.toString()) : [];
+                  setIncludeCategories(selectedIds);
+                },
+                placeholder: "Select categories to include",
+                isLoading: isLoading || categories.length === 0
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+                className: "info-text",
+                children: "Note: If no categories are selected, all products will be eligible for the discount."
+              })]
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+            className: "settings-row",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+              className: "settings-header",
+              children: "Exclude Categories from Discount"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              className: "settings-content",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_select__WEBPACK_IMPORTED_MODULE_2__["default"], {
+                isMulti: true,
+                name: "excludeCategories",
+                options: categories.map(cat => ({
+                  value: cat.term_id.toString(),
+                  label: cat.name
+                })),
+                className: "react-select-container",
+                classNamePrefix: "react-select",
+                value: Array.isArray(excludeCategories) && categories.length > 0 ? excludeCategories.map(catId => {
+                  const category = categories.find(cat => cat.term_id.toString() === catId.toString());
+                  return category ? {
+                    value: category.term_id.toString(),
+                    label: category.name
+                  } : null;
+                }).filter(option => option !== null) : [],
+                onChange: selected => {
+                  const selectedIds = selected ? selected.map(option => option.value.toString()) : [];
+                  setExcludeCategories(selectedIds);
+                },
+                placeholder: "Select categories to exclude",
+                isLoading: isLoading || categories.length === 0
+              })
+            })]
+          })]
+        })]
+      })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+      className: "button-container",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+        type: "button",
+        onClick: handleSubmit,
+        disabled: saving,
+        className: `save-button ${saving ? 'save-button--loading' : ''}`,
+        children: saving ? 'Saving...' : 'Save Discount Rules'
+      })
+    })]
+  });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DiscountRules);
+
+/***/ }),
+
+/***/ "./src/components/admin/TabOtherSettings.jsx":
+/*!***************************************************!*\
+  !*** ./src/components/admin/TabOtherSettings.jsx ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__);
+
+
+
+// Other Settings Component (Empty for now)
+
+const OtherSettings = () => {
+  const [message, setMessage] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
+  const [saving, setSaving] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const handleSubmit = async () => {
+    setSaving(true);
+    // Mock save functionality
+    setTimeout(() => {
+      setMessage('Other settings saved successfully!');
+      setSaving(false);
+      setTimeout(() => setMessage(''), 3000);
+    }, 1000);
+  };
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+    className: "tab-content",
+    children: [message && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+      className: `message ${message.includes('Error') ? 'message--error' : 'message--success'}`,
+      children: message
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      style: {
+        textAlign: 'center',
+        padding: '40px',
+        color: '#666'
+      },
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
+        children: "Other Settings"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
+        children: "This section is currently empty. Additional settings will be added here in the future."
+      })]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+      className: "button-container",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+        type: "button",
+        onClick: handleSubmit,
+        disabled: saving,
+        className: `save-button ${saving ? 'save-button--loading' : ''}`,
+        children: saving ? 'Saving...' : 'Save Other Settings'
+      })
+    })]
+  });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (OtherSettings);
+
+/***/ }),
+
+/***/ "./src/components/admin/TabWholesaleTable.jsx":
+/*!****************************************************!*\
+  !*** ./src/components/admin/TabWholesaleTable.jsx ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_select__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-select */ "./node_modules/react-select/dist/react-select.esm.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__);
+
+
+
+// Wholesale Table Component
+
+const WholesaleTable = ({
+  categories,
+  isLoading,
+  Settings
+}) => {
   const [selectedColumns, setSelectedColumns] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
   const [tableStyle, setTableStyle] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('default');
   const [wholesaleProducts, setWholesaleProducts] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('all');
   const [selectedCategory, setSelectedCategory] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('all');
   const [productsPerPage, setProductsPerPage] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
-  const [categories, setCategories] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
-  const [EnableDiscount, setEnableDiscount] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('wholesale_discount_off');
-  const [wholesaleDiscountType, setWholesaleDiscountType] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('percentage');
-  const [wholesaleDiscountValue, setWholesaleDiscountValue] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
-  const [includeCategories, setIncludeCategories] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
-  const [excludeCategories, setExcludeCategories] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
-  const [isLoading, setIsLoading] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true);
   const [message, setMessage] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
+  const [saving, setSaving] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
 
   // Available columns options
   const columnOptions = [{
@@ -19926,34 +20368,14 @@ const Dashboard = () => {
     label: 'Add to Cart'
   }];
 
-  // Load initial settings
+  // Load settings on component mount
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-    loadSettings();
-    loadCategories();
+    loadWholesaleTableSettings();
   }, []);
-  const loadSettings = async () => {
+  const loadWholesaleTableSettings = async () => {
     try {
-      // Replace with actual API call to WordPress
-      const response = await fetch('/wp-json/wpt/v1/settings');
+      const response = await fetch('/wp-json/wpt/v1/settings/wholesale-table');
       const data = await response.json();
-
-      // Parse exclude categories if it's a string
-      let excludeCategories = [];
-      if (data.wpt_exclude_categories) {
-        if (typeof data.wpt_exclude_categories === 'string' && data.wpt_exclude_categories.trim()) {
-          excludeCategories = data.wpt_exclude_categories.split(',').map(id => id.trim()).filter(id => id); // Remove empty strings
-        } else if (Array.isArray(data.wpt_exclude_categories)) {
-          excludeCategories = data.wpt_exclude_categories.map(id => id.toString());
-        }
-      }
-      let includeCategories = [];
-      if (data.wpt_include_categories) {
-        if (typeof data.wpt_include_categories === 'string' && data.wpt_include_categories.trim()) {
-          includeCategories = data.wpt_include_categories.split(',').map(id => id.trim()).filter(id => id); // Remove empty strings
-        } else if (Array.isArray(data.wpt_include_categories)) {
-          includeCategories = data.wpt_include_categories.map(id => id.toString());
-        }
-      }
 
       // Mock data for demonstration
       const mockSettings = {
@@ -19961,63 +20383,15 @@ const Dashboard = () => {
         table_style: 'default',
         wholesale_products: 'all',
         category: 'all',
-        products_per_page: '10',
-        wholesale_discount: 'wholesale_discount_off',
-        wholesale_discount_type: 'percentage',
-        wholesale_discount_value: '',
-        include_categories: '',
-        exclude_categories: ''
+        products_per_page: '10'
       };
-      setSelectedColumns(data.selected_columns || []);
-      setTableStyle(data.table_style || 'default');
-      setWholesaleProducts(data.wholesale_products_opt || 'all');
-      setSelectedCategory(data.wholesale_product_category || 'all');
-      setProductsPerPage(data.wholesale_product_pp || '');
-      setIsLoading(false);
-      setEnableDiscount(data.wpt_enabled_wholesale_discount || 'wholesale_discount_off');
-      setWholesaleDiscountType(data.wpt_wholesale_discount_type || 'percentage'); // Default value
-      setWholesaleDiscountValue(data.wpt_wholesale_discount_value || ''); // Default value
-      setIncludeCategories(includeCategories);
-      setExcludeCategories(excludeCategories);
-
-      // If the data is not in the expected format, use mock data
-      if (!data.selected_columns || !data.table_style || !data.wholesale_products_opt) {
-        setSelectedColumns(mockSettings.selected_columns);
-        setTableStyle(mockSettings.table_style);
-        setWholesaleProducts(mockSettings.wholesale_products);
-        setSelectedCategory(mockSettings.category);
-        setProductsPerPage(mockSettings.products_per_page);
-        setEnableDiscount(mockSettings.wholesale_discount);
-        setWholesaleDiscountType(mockSettings.wholesale_discount_type);
-        setWholesaleDiscountValue(mockSettings.wholesale_discount_value);
-        setIncludeCategories(mockSettings.include_categories);
-        setExcludeCategories(mockSettings.exclude_categories);
-      }
+      setSelectedColumns(data.selected_columns || mockSettings.selected_columns);
+      setTableStyle(data.table_style || mockSettings.table_style);
+      setWholesaleProducts(data.wholesale_products_opt || mockSettings.wholesale_products);
+      setSelectedCategory(data.wholesale_product_category || mockSettings.category);
+      setProductsPerPage(data.wholesale_product_pp || mockSettings.products_per_page);
     } catch (error) {
-      console.error('Error loading settings:', error);
-      setIsLoading(false);
-    }
-  };
-  const loadCategories = async () => {
-    try {
-      // Replace with actual API call to WordPress
-      const response = await fetch('/wp-json/wpt/v1/categories');
-      const data = await response.json();
-
-      // Check if data is an object and extract categories if they exist
-      if (data && data.length) {
-        // If data is already an array, set it as categories
-        setCategories(data);
-      } else if (data && Object.values(data).length) {
-        // Convert the response object into an array of category objects
-        const categoriesArray = Object.values(data);
-        setCategories(categoriesArray);
-      } else {
-        // Fallback to an empty array if no categories are found
-        setCategories([]);
-      }
-    } catch (error) {
-      console.error('Error loading categories:', error);
+      console.error('Error loading wholesale table settings:', error);
     }
   };
   const handleColumnChange = columnValue => {
@@ -20030,47 +20404,37 @@ const Dashboard = () => {
     });
   };
   const handleSubmit = async () => {
-    setIsLoading(true);
+    setSaving(true);
     try {
       const settingsData = {
         selected_columns: selectedColumns,
         table_style: tableStyle,
         wholesale_products_opt: wholesaleProducts,
         wholesale_product_category: selectedCategory,
-        wholesale_product_pp: productsPerPage,
-        wpt_enabled_wholesale_discount: EnableDiscount,
-        wpt_wholesale_discount_type: wholesaleDiscountType,
-        wpt_wholesale_discount_value: wholesaleDiscountValue,
-        wpt_include_categories: includeCategories.join(','),
-        // Join array to string for API
-        wpt_exclude_categories: excludeCategories.join(',') // Join array to string for API
+        wholesale_product_pp: productsPerPage
       };
-
-      // Replace with actual API call to WordPress
-      const response = await fetch('/wp-json/wpt/v1/settings', {
+      const response = await fetch('/wp-json/wpt/v1/settings/wholesale-table', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-WP-Nonce': wpApiSettings.nonce
+          'X-WP-Nonce': wpApiSettings?.nonce || 'demo-nonce'
         },
         body: JSON.stringify(settingsData)
       });
 
       // Mock success response
       setTimeout(() => {
-        setMessage('Settings saved successfully!');
-        setIsLoading(false);
+        setMessage('Wholesale table settings saved successfully!');
+        setSaving(false);
         setTimeout(() => setMessage(''), 3000);
       }, 1000);
     } catch (error) {
       console.error('Error saving settings:', error);
       setMessage('Error saving settings. Please try again.');
-      setIsLoading(false);
+      setSaving(false);
       setTimeout(() => setMessage(''), 3000);
     }
   };
-
-  // Custom styles for react-select
   const selectStyles = {
     control: provided => ({
       ...provided,
@@ -20082,302 +20446,166 @@ const Dashboard = () => {
       minHeight: 'auto'
     })
   };
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
-    className: "admin-dashboard",
-    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-      className: "card-board",
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h1", {
-        className: "dashboard-title",
-        children: "Wholesale Product Table Settings"
-      }), message && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
-        className: `message ${message.includes('Error') ? 'message--error' : 'message--success'}`,
-        children: message
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-        className: "settings-container",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("table", {
-          className: "settings-table",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tbody", {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
-              className: "settings-row",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-                className: "settings-header",
-                children: "Select Columns to Display"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-                className: "settings-content",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
-                  className: "checkbox-group",
-                  children: columnOptions.map(option => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("label", {
-                    className: "checkbox-label",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-                      type: "checkbox",
-                      value: option.value,
-                      checked: selectedColumns.includes(option.value),
-                      onChange: () => handleColumnChange(option.value),
-                      className: "checkbox-input"
-                    }), option.label]
-                  }, option.value))
-                })
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+    className: "tab-content",
+    children: [message && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+      className: `message ${message.includes('Error') ? 'message--error' : 'message--success'}`,
+      children: message
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("table", {
+      className: "settings-table",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tbody", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+          className: "settings-row",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            className: "settings-header",
+            children: "Select Columns to Display"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+            className: "settings-content",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+              className: "checkbox-group",
+              children: columnOptions.map(option => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("label", {
+                className: "checkbox-label",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+                  type: "checkbox",
+                  value: option.value,
+                  checked: selectedColumns.includes(option.value),
+                  onChange: () => handleColumnChange(option.value),
+                  className: "checkbox-input"
+                }), option.label]
+              }, option.value))
+            })
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+          className: "settings-row",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            className: "settings-header",
+            children: "Select Table Style"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+            className: "settings-content",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+              className: "radio-group",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("label", {
+                className: "radio-label",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+                  type: "radio",
+                  name: "table_style",
+                  value: "default",
+                  checked: tableStyle === 'default',
+                  onChange: e => setTableStyle(e.target.value),
+                  className: "radio-input"
+                }), "Default Style"]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("label", {
+                className: "radio-label",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+                  type: "radio",
+                  name: "table_style",
+                  value: "plugin",
+                  checked: tableStyle === 'plugin',
+                  onChange: e => setTableStyle(e.target.value),
+                  className: "radio-input"
+                }), "Plugin Style"]
               })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
-              className: "settings-row",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-                className: "settings-header",
-                children: "Select Table Style"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-                className: "settings-content",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-                  className: "radio-group",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("label", {
-                    className: "radio-label",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-                      type: "radio",
-                      name: "table_style",
-                      value: "default",
-                      checked: tableStyle === 'default',
-                      onChange: e => setTableStyle(e.target.value),
-                      className: "radio-input"
-                    }), "Default Style"]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("label", {
-                    className: "radio-label",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-                      type: "radio",
-                      name: "table_style",
-                      value: "plugin",
-                      checked: tableStyle === 'plugin',
-                      onChange: e => setTableStyle(e.target.value),
-                      className: "radio-input"
-                    }), "Plugin Style"]
-                  })]
-                })
+            })
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+          className: "settings-row",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            className: "settings-header",
+            children: "Select Wholesale Products"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+            className: "settings-content",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+              className: "radio-group",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("label", {
+                className: "radio-label",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+                  type: "radio",
+                  name: "wholesale_products",
+                  value: "all",
+                  checked: wholesaleProducts === 'all',
+                  onChange: e => setWholesaleProducts(e.target.value),
+                  className: "radio-input"
+                }), "All Products"]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("label", {
+                className: "radio-label",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+                  type: "radio",
+                  name: "wholesale_products",
+                  value: "category",
+                  checked: wholesaleProducts === 'category',
+                  onChange: e => setWholesaleProducts(e.target.value),
+                  className: "radio-input"
+                }), "Select a Category"]
               })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
-              className: "settings-row",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-                className: "settings-header",
-                children: "Select Wholesale Products"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-                className: "settings-content",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-                  className: "radio-group",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("label", {
-                    className: "radio-label",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-                      type: "radio",
-                      name: "wholesale_products",
-                      value: "all",
-                      checked: wholesaleProducts === 'all',
-                      onChange: e => setWholesaleProducts(e.target.value),
-                      className: "radio-input"
-                    }), "All Products"]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("label", {
-                    className: "radio-label",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-                      type: "radio",
-                      name: "wholesale_products",
-                      value: "category",
-                      checked: wholesaleProducts === 'category',
-                      onChange: e => setWholesaleProducts(e.target.value),
-                      className: "radio-input"
-                    }), "Select a Category"]
-                  })]
-                })
-              })]
-            }), wholesaleProducts === 'category' && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
-              className: "settings-row",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-                className: "settings-header",
-                children: "Select a Category as Wholesale to Show on Wholesale Table"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
-                className: "settings-content",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_select__WEBPACK_IMPORTED_MODULE_2__["default"], {
-                  isMulti: true,
-                  name: "selectedCategories",
-                  options: categories.map(cat => ({
-                    value: cat.term_id.toString(),
-                    label: cat.name
-                  })),
-                  className: "react-select-container",
-                  classNamePrefix: "react-select",
-                  value: selectedCategory && selectedCategory !== 'all' && selectedCategory !== '' ? selectedCategory.split(',').map(catId => {
-                    const category = categories.find(cat => cat.term_id.toString() === catId.toString());
-                    return category ? {
-                      value: category.term_id.toString(),
-                      label: category.name
-                    } : null;
-                  }).filter(option => option !== null) : [] // Empty array when nothing selected or when 'all' was previously selected
-                  ,
-                  onChange: selected => {
-                    const selectedIds = selected ? selected.map(option => option.value) : [];
-                    setSelectedCategory(selectedIds.length > 0 ? selectedIds.join(',') : '');
-                  },
-                  placeholder: "Select categories",
-                  isLoading: isLoading || categories.length === 0,
-                  isClearable: true,
-                  closeMenuOnSelect: false,
-                  styles: selectStyles
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
-                  className: "info-text",
-                  children: "Note: If no category is selected, all products will be shown."
-                })]
-              })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
-              className: "settings-row",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-                className: "settings-header",
-                children: "Products Per Page"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-                className: "settings-content",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-                  type: "text",
-                  value: productsPerPage,
-                  onChange: e => setProductsPerPage(e.target.value),
-                  placeholder: "Enter number of products per page",
-                  className: "text-input"
-                })
-              })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
-              className: "settings-row",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-                className: "settings-header",
-                children: "Wholesale Discount ?"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-                className: "settings-content",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("label", {
-                  className: "checkbox-label",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-                    type: "checkbox",
-                    value: EnableDiscount,
-                    checked: EnableDiscount === 'wholesale_discount_on',
-                    onChange: () => setEnableDiscount(EnableDiscount === 'wholesale_discount_on' ? 'wholesale_discount_off' : 'wholesale_discount_on'),
-                    className: "checkbox-input"
-                  }), "Enable Wholesale Discount"]
-                })
-              })]
-            }), EnableDiscount === 'wholesale_discount_on' && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.Fragment, {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
-                className: "settings-row",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-                  className: "settings-header",
-                  children: "Wholesale Discount Type"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-                  className: "settings-content",
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
-                    value: wholesaleDiscountType,
-                    onChange: e => setWholesaleDiscountType(e.target.value),
-                    className: "select-input",
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-                      value: "percentage",
-                      children: "Percentage"
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-                      value: "fixed",
-                      children: "Fixed Amount"
-                    })]
-                  })
-                })]
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
-                className: "settings-row",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-                  className: "settings-header",
-                  children: "Wholesale Discount Value"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-                  className: "settings-content",
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-                    type: "text",
-                    value: wholesaleDiscountValue,
-                    onChange: e => setWholesaleDiscountValue(e.target.value),
-                    placeholder: "Enter discount value",
-                    className: "text-input"
-                  })
-                })]
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
-                className: "settings-row",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-                  className: "settings-header",
-                  children: "Include Categories for Discount"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
-                  className: "settings-content",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_select__WEBPACK_IMPORTED_MODULE_2__["default"], {
-                    isMulti: true,
-                    name: "includeCategories",
-                    options: categories.map(cat => ({
-                      value: cat.term_id.toString(),
-                      label: cat.name
-                    })),
-                    className: "react-select-container",
-                    classNamePrefix: "react-select",
-                    value:
-                    // Safety check: ensure includeCategories is array and categories is loaded
-                    Array.isArray(includeCategories) && categories.length > 0 ? includeCategories.map(catId => {
-                      const category = categories.find(cat => cat.term_id.toString() === catId.toString());
-                      return category ? {
-                        value: category.term_id.toString(),
-                        label: category.name
-                      } : null;
-                    }).filter(option => option !== null) : [] // Empty array if not ready
-                    ,
-                    onChange: selected => {
-                      const selectedIds = selected ? selected.map(option => option.value.toString()) : [];
-                      setIncludeCategories(selectedIds);
-                    },
-                    placeholder: "Select categories to include",
-                    isLoading: isLoading || categories.length === 0 // Show loading while data loads
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
-                    className: "info-text",
-                    children: "Note: If no categories are selected, all products will be eligible for the discount."
-                  })]
-                })]
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
-                className: "settings-row",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-                  className: "settings-header",
-                  children: "Exclude Categories from Discount"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-                  className: "settings-content",
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_select__WEBPACK_IMPORTED_MODULE_2__["default"], {
-                    isMulti: true,
-                    name: "excludeCategories",
-                    options: categories.map(cat => ({
-                      value: cat.term_id.toString(),
-                      label: cat.name
-                    })),
-                    className: "react-select-container",
-                    classNamePrefix: "react-select",
-                    value:
-                    // Safety check: ensure excludeCategories is array and categories is loaded
-                    Array.isArray(excludeCategories) && categories.length > 0 ? excludeCategories.map(catId => {
-                      const category = categories.find(cat => cat.term_id.toString() === catId.toString());
-                      return category ? {
-                        value: category.term_id.toString(),
-                        label: category.name
-                      } : null;
-                    }).filter(option => option !== null) : [] // Empty array if not ready
-                    ,
-                    onChange: selected => {
-                      const selectedIds = selected ? selected.map(option => option.value.toString()) : [];
-                      setExcludeCategories(selectedIds);
-                    },
-                    placeholder: "Select categories to exclude",
-                    isLoading: isLoading || categories.length === 0 // Show loading while data loads
-                  })
-                })]
-              })]
+            })
+          })]
+        }), wholesaleProducts === 'category' && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+          className: "settings-row",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            className: "settings-header",
+            children: "Select a Category as Wholesale to Show on Wholesale Table"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
+            className: "settings-content",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_select__WEBPACK_IMPORTED_MODULE_2__["default"], {
+              isMulti: true,
+              name: "selectedCategories",
+              options: categories.map(cat => ({
+                value: cat.term_id.toString(),
+                label: cat.name
+              })),
+              className: "react-select-container",
+              classNamePrefix: "react-select",
+              value: selectedCategory && selectedCategory !== 'all' && selectedCategory !== '' ? selectedCategory.split(',').map(catId => {
+                const category = categories.find(cat => cat.term_id.toString() === catId.toString());
+                return category ? {
+                  value: category.term_id.toString(),
+                  label: category.name
+                } : null;
+              }).filter(option => option !== null) : [],
+              onChange: selected => {
+                const selectedIds = selected ? selected.map(option => option.value) : [];
+                setSelectedCategory(selectedIds.length > 0 ? selectedIds.join(',') : '');
+              },
+              placeholder: "Select categories",
+              isLoading: isLoading || categories.length === 0,
+              isClearable: true,
+              closeMenuOnSelect: false,
+              styles: selectStyles
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+              className: "info-text",
+              children: "Note: If no category is selected, all products will be shown."
             })]
-          })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
-          className: "button-container",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-            type: "button",
-            onClick: handleSubmit,
-            disabled: isLoading,
-            className: `save-button ${isLoading ? 'save-button--loading' : ''}`,
-            children: isLoading ? 'Saving...' : 'Save Changes'
-          })
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+          className: "settings-row",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            className: "settings-header",
+            children: "Products Per Page"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+            className: "settings-content",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+              type: "text",
+              value: productsPerPage,
+              onChange: e => setProductsPerPage(e.target.value),
+              placeholder: "Enter number of products per page",
+              className: "text-input"
+            })
+          })]
         })]
-      })]
-    })
+      })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+      className: "button-container",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+        type: "button",
+        onClick: handleSubmit,
+        disabled: saving,
+        className: `save-button ${saving ? 'save-button--loading' : ''}`,
+        children: saving ? 'Saving...' : 'Save Wholesale Table Settings'
+      })
+    })]
   });
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Dashboard);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (WholesaleTable);
 
 /***/ }),
 

@@ -37,15 +37,21 @@ class WPTW_APIs {
             'permission_callback' => '__return_true',
         ] );
 
-        register_rest_route( 'wpt/v1', '/settings', [
+        register_rest_route( 'wpt/v1', '/settings/wholesale-table', [
             'methods'  => 'GET',
-            'callback' => [$this, 'wptw_get_settings'],
+            'callback' => [$this, 'wptw_get_wholesale_table_settings'],
             'permission_callback' => '__return_true',
         ] );
 
-        register_rest_route( 'wpt/v1', '/settings', [
+        register_rest_route( 'wpt/v1', '/settings/discount-rules', [
+            'methods'  => 'GET',
+            'callback' => [$this, 'wptw_get_discount_rules_settings'],
+            'permission_callback' => '__return_true',
+        ] );
+
+        register_rest_route( 'wpt/v1', '/settings/wholesale-table', [
             'methods'  => 'POST',
-            'callback' => [$this, 'wptw_save_settings'],
+            'callback' => [$this, 'wptw_save_wholesale_table_settings'],
             'permission_callback' => function ( WP_REST_Request $request ) {
                 return current_user_can( 'manage_options' );
             },
@@ -72,7 +78,17 @@ class WPTW_APIs {
                 'wholesale_product_pp' => [
                     'required' => false,
                     'type'     => 'integer',
-                ],
+                ]
+            ],
+        ] );
+
+        register_rest_route( 'wpt/v1', '/settings/discount-rules', [
+            'methods'  => 'POST',
+            'callback' => [$this, 'wptw_save_discount_rules_settings'],
+            'permission_callback' => function ( WP_REST_Request $request ) {
+                return current_user_can( 'manage_options' );
+            },
+            'args' => [
                 'wpt_enabled_wholesale_discount' => [
                     'required' => false,
                     'type'     => 'string',
@@ -107,24 +123,31 @@ class WPTW_APIs {
         return rest_ensure_response( $categories );
     }
 
-    public function wptw_get_settings() {
+    public function wptw_get_wholesale_table_settings() {
         $settings = array(
             'selected_columns' => get_option( 'wptw_selected_columns', [] ),
             'table_style'      => get_option( 'wptw_table_style', '' ),
             'wholesale_products_opt' => get_option( 'wptw_wholesale_products_opt', '' ),
             'wholesale_product_category' => get_option( 'wptw_wholesale_product_category', '' ),
-            'wholesale_product_pp' => get_option( 'wptw_wholesale_product_pp', '' ),
-            'wpt_enabled_wholesale_discount' => get_option( 'wpt_enabled_wholesale_discount', false ),
-            'wpt_wholesale_discount_type' => get_option( 'wpt_wholesale_discount_type', 'percentage' ),
-            'wpt_wholesale_discount_value' => get_option( 'wpt_wholesale_discount_value', '' ),
-            'wpt_include_categories' => get_option( 'wpt_include_categories', '' ),
-            'wpt_exclude_categories' => get_option( 'wpt_exclude_categories', '' ),
+            'wholesale_product_pp' => get_option( 'wptw_wholesale_product_pp', '' )
         );
 
         return rest_ensure_response( $settings );
     }
 
-    public function wptw_save_settings( WP_REST_Request $request ) {
+    public function wptw_get_discount_rules_settings() {
+        $settings = array(
+            'wpt_enabled_wholesale_discount' => get_option( 'wpt_enabled_wholesale_discount', false ),
+            'wpt_wholesale_discount_type' => get_option( 'wpt_wholesale_discount_type', 'percentage' ),
+            'wpt_wholesale_discount_value' => get_option( 'wpt_wholesale_discount_value', '' ),
+            'wpt_include_categories' => get_option( 'wpt_include_categories', '' ),
+            'wpt_exclude_categories' => get_option( 'wpt_exclude_categories', '' )
+        );
+
+        return rest_ensure_response( $settings );
+    }
+
+    public function wptw_save_wholesale_table_settings( WP_REST_Request $request ) {
         $settings = $request->get_json_params();
 
         if ( isset( $settings['selected_columns'] ) ) {
@@ -142,6 +165,13 @@ class WPTW_APIs {
         if ( isset( $settings['wholesale_product_pp'] ) ) {
             update_option( 'wptw_wholesale_product_pp', intval( $settings['wholesale_product_pp'] ) );
         }
+
+        return rest_ensure_response( [ 'status' => 'success' ] );
+    }
+
+    public function wptw_save_discount_rules_settings( WP_REST_Request $request ) {
+        $settings = $request->get_json_params();
+
         if( isset( $settings['wpt_enabled_wholesale_discount'] ) ) {
             update_option( 'wpt_enabled_wholesale_discount', $settings['wpt_enabled_wholesale_discount'] );
         }
